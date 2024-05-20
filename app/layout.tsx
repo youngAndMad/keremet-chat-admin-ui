@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
+import SidebarLayout from "@/components/layout/sidebar/SidebarLayout";
 
-const inter = Inter({ subsets: ["latin"] });
 const ClientProvider = dynamic(() => import("@/providers/ClientProvider"), {
   ssr: false,
 });
@@ -20,8 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <ClientProvider>{children}</ClientProvider>
+      <body>
+        <SidebarLayout pageTitle="Keremet chat adminstration">
+          <ClientProvider>{children}</ClientProvider>
+        </SidebarLayout>
       </body>
     </html>
   );
