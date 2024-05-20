@@ -20,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SidebarLayout pageTitle="Keremet chat adminstration">
-          <ClientProvider>{children}</ClientProvider>
-        </SidebarLayout>
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );
