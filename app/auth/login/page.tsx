@@ -1,13 +1,15 @@
 "use client";
 import React from "react";
-import { SecurityRoleType } from "@/types/User";
-import { useState } from "react";
+import { LoginData, SecurityRoleType } from "@/types/auth";
 import { MdOutlineMailLock } from "react-icons/md";
 import { FaLock } from "react-icons/fa6";
 import "./Login.scss";
 import { Spinner } from "@nextui-org/spinner";
 import CommonBackground from "@/public/common-background.svg";
 import { useLoginMutation } from "@/features/auth/query";
+import { useForm } from "@tanstack/react-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { z } from "zod";
 
 const allowedRoles = [
   SecurityRoleType.ROLE_APPLICATION_MANAGER,
@@ -15,27 +17,19 @@ const allowedRoles = [
 ];
 
 export default function Page() {
-  const [email, setEmail] = useState<string>();
-  const [password, setPassword] = useState<string>();
+  const loginForm = useForm<LoginData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: async ({ value: loginData }) => {
+      console.log("form submitted", loginData);
+      loginUserMutation.mutate(loginData);
+    },
+    validatorAdapter: zodValidator,
+  });
 
   const loginUserMutation = useLoginMutation();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
-
-    const payload = {
-      email: email!,
-      password: password!,
-    } as const;
-
-    loginUserMutation.mutate(payload); // todo: check roles from response
-  };
 
   return (
     <div className="container">
@@ -51,44 +45,95 @@ export default function Page() {
               height="64"
             />
           </div>
-          <form className="log-in" onSubmit={(e) => handleSubmit(e)}>
+          <form
+            className="log-in"
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              loginForm.handleSubmit();
+            }}
+          >
             <h4>
               We are <span>Keremet Chat</span>
             </h4>
             <p>Welcome back! Check server adminstration for credentials</p>
             <div className="floating-label">
-              <input
-                placeholder="Email"
-                type="email"
-                id="email"
-                required
-                autoComplete="off"
-                onChange={(e) => {
-                  setEmail(e.target.value);
+              <loginForm.Field
+                name="email"
+                validators={{
+                  onChange: z.string().email("Invalid email address"),
+                  onChangeAsyncDebounceMs: 500,
                 }}
-              />
-              <label htmlFor="email">Email:</label>
+                children={(field) => (
+                  <>
+                    <input
+                      placeholder="Email"
+                      type="email"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      required
+                      autoComplete="off"
+                    />
+                    <label htmlFor="email">Email:</label>
+                    {field.state.meta?.touchedErrors && (
+                      <div className="error">
+                        {field.state.meta?.touchedErrors}
+                      </div>
+                    )}
+                  </>
+                )}
+              ></loginForm.Field>
+
               <div className="icon">
                 <MdOutlineMailLock />
               </div>
             </div>
             <div className="floating-label">
-              <input
-                placeholder="Password"
-                type="password"
-                required
-                id="password"
-                onChange={(e) => {
-                  setPassword(e.target.value);
+              <loginForm.Field
+                name="password"
+                validators={{
+                  onChange: z.string({ message: "Password is required" }),
+                  onChangeAsyncDebounceMs: 500,
                 }}
-                autoComplete="off"
-              />
-              <label htmlFor="password">Password:</label>
+                children={(field) => (
+                  <>
+                    <input
+                      placeholder="Password"
+                      type="password"
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      required
+                      autoComplete="off"
+                    />
+                    <label htmlFor={field.name}>Password:</label>
+                    {field.state.meta?.touchedErrors && (
+                      <div className="error">
+                        {field.state.meta?.touchedErrors}
+                      </div>
+                    )}
+                  </>
+                )}
+              ></loginForm.Field>
               <div className="icon">
                 <FaLock />
               </div>
             </div>
-            <button type="submit">Log in</button>
+            <loginForm.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit]) => (
+                <>
+                  <button type="submit" disabled={!canSubmit}>
+                    Login
+                  </button>
+                </>
+              )}
+            />
             <div className="links">
               <div className="link-wrapper">
                 <a
