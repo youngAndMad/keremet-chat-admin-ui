@@ -7,6 +7,10 @@ $primary: rgb(182, 157, 230);
   height: 100vh;
 }
 
+.logo {
+  fill: #fff;
+}
+
 h4 {
   font-size: 24px;
   font-weight: 600;
@@ -49,7 +53,7 @@ form {
 button {
   -webkit-appearance: none;
   appearance: none;
-  width: auto;
+  width: 100%;
   min-width: 100px;
   border-radius: 24px;
   text-align: center;
@@ -139,6 +143,27 @@ input {
     animation-name: shake-shake;
   }
 }
+
+.links {
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+  .link-wrapper {
+    text-align: center;
+    .link {
+      font-size: 14px;
+      color: #000;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: underline;
+      transition: all 0.3s ease;
+      &:hover {
+        color: saturate($primary, 30%);
+      }
+    }
+  }
+}
+
 $displacement: 3px;
 @keyframes shake-shake {
   0% {
