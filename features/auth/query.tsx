@@ -4,7 +4,7 @@ import { LoginData } from "@/types/auth";
 import User from "@/types/user";
 import { useMutation, MutationFunction } from "@tanstack/react-query";
 
-export function useLoginMutation() {
+export function login() {
   // imitate a pending state
   const mutationFn: MutationFunction<User, LoginData> = async (data) => {
     await delay(5);

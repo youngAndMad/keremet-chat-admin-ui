@@ -2,10 +2,10 @@
 import React, { Dispatch, SetStateAction } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { SlHome } from "react-icons/sl";
 import { BsInfoSquare, BsEnvelopeAt } from "react-icons/bs";
-import { FaTshirt, FaRedhat } from "react-icons/fa";
+import { FaRedhat } from "react-icons/fa";
+import { TbBrandOauth } from "react-icons/tb";
 import keremetChatLogo from "@/public/keremet-chat-logo.svg";
 
 type ISidebarProps = {
@@ -61,7 +61,6 @@ export default function Sidebar({ show, setter }: ISidebarProps) {
       <div className={`${className}${appendClass}`}>
         <div className="p-2 flex">
           <Link href="/">
-            {/*eslint-disable-next-line*/}
             <img
               src={keremetChatLogo.src}
               alt="Company Logo"
@@ -72,13 +71,17 @@ export default function Sidebar({ show, setter }: ISidebarProps) {
         </div>
         <div className="flex flex-col">
           <MenuItem name="Home" route="/" icon={<SlHome />} />
-          <MenuItem name="T-Shirts" route="/t-shirts" icon={<FaTshirt />} />
+          <MenuItem
+            name="Identity providers"
+            route="/dashboard/client-registration"
+            icon={<TbBrandOauth />}
+          />
           <MenuItem name="Hats" route="/hats" icon={<FaRedhat />} />
           <MenuItem name="About Us" route="/about" icon={<BsInfoSquare />} />
           <MenuItem name="Contact" route="/contact" icon={<BsEnvelopeAt />} />
         </div>
       </div>
-      {show ? <ModalOverlay /> : <></>}
+      {show && <ModalOverlay />}
     </>
   );
 }

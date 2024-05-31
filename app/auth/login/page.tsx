@@ -6,7 +6,7 @@ import { FaLock } from "react-icons/fa6";
 import "./Login.scss";
 import { Spinner } from "@nextui-org/spinner";
 import CommonBackground from "@/public/common-background.svg";
-import { useLoginMutation } from "@/features/auth/query";
+import { login } from "@/features/auth/query";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
@@ -29,7 +29,7 @@ export default function Page() {
     validatorAdapter: zodValidator,
   });
 
-  const loginUserMutation = useLoginMutation();
+  const loginUserMutation = login();
 
   return (
     <div className="container">
