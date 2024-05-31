@@ -31,3 +31,15 @@ body {
     text-wrap: balance;
   }
 }
+
+.centered-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.large-spinner {
+  width: 100px; /* Adjust the size as needed */
+  height: 100px;
+}

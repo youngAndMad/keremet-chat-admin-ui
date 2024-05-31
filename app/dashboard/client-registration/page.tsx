@@ -10,11 +10,29 @@ export default function Page() {
   return (
     <>
       {clientRegistrations.isPending ? (
-        <Spinner />
+        <div className="centered-spinner">
+          <Spinner className="large-spinner" size="lg" label="Loading..." />
+        </div>
       ) : clientRegistrations.isError ? (
         <ApiError message={clientRegistrations.error.message} />
       ) : (
-        <h1>Hello, Dashboard Client registrations Page!</h1>
+        <>
+          <h1>Hello, Dashboard Client registrations Page!</h1>
+          <div>
+            {Object.entries(clientRegistrations.data).map(
+              ([authType, registrations]) => (
+                <div key={authType}>
+                  <h3>{authType}</h3>
+                  <ul>
+                    {registrations.map((registration, index) => (
+                      <li key={index}>{registration.clientName}</li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            )}
+          </div>
+        </>
       )}
     </>
   );

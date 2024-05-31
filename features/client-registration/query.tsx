@@ -33,7 +33,7 @@ export function getClientRegistrations() {
     queryKey: ["get-client-registrations"],
     queryFn: async () => {
       return api.get<ClientRegistrationsResponse>(
-        "/api/v1/client-registration"
+        "/api/v1/client-registration/full"
       );
     },
   });

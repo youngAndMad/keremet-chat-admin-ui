@@ -37,4 +37,4 @@ export type ClientRegistrationResponse = ClientRegistrationRequest & {
 
 export type ClientRegistrationsResponse = {
   [K in AuthType]: ClientRegistrationResponse[];
-}[];
+};

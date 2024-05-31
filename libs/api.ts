@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 axios.defaults.withCredentials = true;
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_BASE_API_URL,
+  baseURL: "http://localhost:8081",
 });
 
 interface ApiClient {
