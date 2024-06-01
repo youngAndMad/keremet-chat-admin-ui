@@ -37,9 +37,10 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh; /* Full viewport height */
+  width: 100%; /* Ensure the parent takes full width */
 }
 
 .large-spinner {
-  width: 100px; /* Adjust the size as needed */
-  height: 100px;
+  width: 100%; /* Full width of parent */
+  height: 100%; /* Full height of parent */
 }

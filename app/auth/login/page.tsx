@@ -7,9 +7,8 @@ import "./Login.scss";
 import { Spinner } from "@nextui-org/spinner";
 import CommonBackground from "@/public/common-background.svg";
 import { login } from "@/features/auth/query";
-import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
+import ApiError from "@/components/ui/ApiError";
 
 const allowedRoles = [
   SecurityRoleType.ROLE_APPLICATION_MANAGER,
@@ -17,24 +16,32 @@ const allowedRoles = [
 ];
 
 export default function Page() {
-  const loginForm = useForm<LoginData>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-    onSubmit: async ({ value: loginData }) => {
-      console.log("form submitted", loginData);
-      loginUserMutation.mutate(loginData);
-    },
-    validatorAdapter: zodValidator,
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>();
 
   const loginUserMutation = login();
+
+  const handleLoginFormSubmit = async (data: LoginData) => {
+    // todo implement login
+    console.log("login data", data);
+
+    await loginUserMutation.mutateAsync(data, {});
+  };
 
   return (
     <div className="container">
       {loginUserMutation.isPending ? (
-        <Spinner size="lg" color="warning" label="Sending request to server" />
+        <div className="centered-spinner">
+          <Spinner className="large-spinner" size="lg" label="Loading..." />
+        </div>
+      ) : loginUserMutation.isError ? (
+        <ApiError
+          message={JSON.stringify(loginUserMutation.error)}
+          beforeGoBack={loginUserMutation.reset}
+        />
       ) : (
         <div className="session">
           <div className="left">
@@ -47,93 +54,50 @@ export default function Page() {
           </div>
           <form
             className="log-in"
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              loginForm.handleSubmit();
-            }}
+            onSubmit={handleSubmit(handleLoginFormSubmit)}
           >
             <h4>
               We are <span>Keremet Chat</span>
             </h4>
             <p>Welcome back! Check server adminstration for credentials</p>
             <div className="floating-label">
-              <loginForm.Field
+              <input
+                placeholder="Email"
+                type="email"
+                {...register("email", {
+                  required: "Email is required",
+                })}
+                id="email"
                 name="email"
-                validators={{
-                  onChange: z.string().email("Invalid email address"),
-                  onChangeAsyncDebounceMs: 500,
-                }}
-                children={(field) => (
-                  <>
-                    <input
-                      placeholder="Email"
-                      type="email"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      required
-                      autoComplete="off"
-                    />
-                    <label htmlFor="email">Email:</label>
-                    {field.state.meta?.touchedErrors && (
-                      <div className="error">
-                        {field.state.meta?.touchedErrors}
-                      </div>
-                    )}
-                  </>
-                )}
-              ></loginForm.Field>
-
+                autoComplete="off"
+              />
+              <label htmlFor="email">Email:</label>
+              {errors.email && (
+                <div className="error">{errors.email.message}</div>
+              )}
               <div className="icon">
                 <MdOutlineMailLock />
               </div>
             </div>
             <div className="floating-label">
-              <loginForm.Field
-                name="password"
-                validators={{
-                  onChange: z.string({ message: "Password is required" }),
-                  onChangeAsyncDebounceMs: 500,
-                }}
-                children={(field) => (
-                  <>
-                    <input
-                      placeholder="Password"
-                      type="password"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      required
-                      autoComplete="off"
-                    />
-                    <label htmlFor={field.name}>Password:</label>
-                    {field.state.meta?.touchedErrors && (
-                      <div className="error">
-                        {field.state.meta?.touchedErrors}
-                      </div>
-                    )}
-                  </>
-                )}
-              ></loginForm.Field>
+              <input
+                placeholder="Password"
+                type="password"
+                id="password"
+                autoComplete="off"
+                {...register("password", {
+                  required: "Password is required",
+                })}
+              />
+              <label htmlFor="password">Password:</label>
+              {errors.password && (
+                <div className="error">{errors.password.message}</div>
+              )}
               <div className="icon">
                 <FaLock />
               </div>
             </div>
-            <loginForm.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-              children={([canSubmit]) => (
-                <>
-                  <button type="submit" disabled={!canSubmit}>
-                    Login
-                  </button>
-                </>
-              )}
-            />
+            <button type="submit">Login</button>
             <div className="links">
               <div className="link-wrapper">
                 <a
